@@ -1,0 +1,32 @@
+{
+  "name": "graphql-jsonplaceholder",
+  "version": "1.0.0",
+  "author": "Santhoshkumar",
+  "license": "ISC",
+  "description": "GraphQL based json placeholder server",
+  "main": "dist/index.js",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "prepare": "simple-git-hooks",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run type-check"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "simple-git-hooks": "^2.11.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
