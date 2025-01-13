@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
 import Post from "../../models/Post";
 import User from "../../models/User";
+import { ISchemaLevelResolver } from "@graphql-tools/utils";
+import { GLContext, PubSubTriggers } from "../types";
 
-export const getPosts = async () => {
+export const getPosts = async (parent, args, context) => {
+  console.log("context", context);
+
   const posts = await Post.find();
   return posts;
 };
@@ -12,7 +16,12 @@ export const getPostById = async (parent, args) => {
   return post;
 };
 
-export const createPost = async (parent, args) => {
+export const createPost: ISchemaLevelResolver<any, GLContext> = async (
+  parent,
+  args,
+  context,
+  info
+) => {
   const user = await User.findById(args.payload.userId);
 
   if (!user) {
@@ -35,6 +44,12 @@ export const createPost = async (parent, args) => {
       return null;
     });
 
+  context.pubsub.publish(PubSubTriggers.POST_CREATED, savedPost);
+
+  postMetrics(parent, args, context, info).then((result) => {
+    context.pubsub.publish(PubSubTriggers.POST_METRICS, result);
+  });
+
   return savedPost;
 };
 
@@ -45,8 +60,18 @@ export const updatePost = async (parent, args) => {
   return post;
 };
 
-export const deletePostById = async (parent, args) => {
+export const deletePostById: ISchemaLevelResolver<any, GLContext> = async (
+  parent,
+  args,
+  context,
+  info
+) => {
   const post = await Post.findByIdAndDelete(args.id);
+
+  postMetrics(parent, args, context, info).then((result) => {
+    context.pubsub.publish(PubSubTriggers.POST_METRICS, result);
+  });
+
   return post;
 };
 
@@ -70,16 +95,48 @@ export const addCommentInPost = async (parent, args) => {
   return post.comments[post.comments.length - 1];
 };
 
+export const postMetrics: ISchemaLevelResolver<any, GLContext> = async () => {
+  const totalCount = await Post.countDocuments();
+
+  return { totalCount };
+};
+
+export const postCreated: ISchemaLevelResolver<any, GLContext> = async (
+  parent,
+  args,
+  context
+) => {
+  return context.pubsub.asyncIterableIterator(PubSubTriggers.POST_CREATED);
+};
+
+export const postMetricsSubscription: ISchemaLevelResolver<
+  any,
+  GLContext
+> = async (parent, arg, context) => {
+  return context.pubsub.asyncIterableIterator(PubSubTriggers.POST_METRICS);
+};
+
 export default {
   query: {
     posts: getPosts,
     getPostById,
     getPostComments,
+    postMetrics,
   },
   mutation: {
     createPost,
     updatePost,
     deletePostById,
     addCommentInPost,
+  },
+  subscription: {
+    postCreated: {
+      subscribe: postCreated,
+      resolve: (result) => result,
+    },
+    postMetrics: {
+      subscribe: postMetricsSubscription,
+      resolve: (result) => result,
+    },
   },
 };

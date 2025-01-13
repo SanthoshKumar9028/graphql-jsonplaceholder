@@ -17,14 +17,19 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
+    "@graphql-tools/schema": "^10.0.16",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongoose": "^8.9.3"
+    "graphql-subscriptions": "^3.0.0",
+    "graphql-ws": "^5.16.2",
+    "mongoose": "^8.9.3",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
+    "@types/ws": "^8.5.13",
     "simple-git-hooks": "^2.11.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"

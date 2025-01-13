@@ -6,9 +6,14 @@ import userResolvers from "./resolvers/users";
 import todosResolvers from "./resolvers/todos";
 
 const queryTypeDef = `
+  type PostMetricsType {
+    totalCount: Int
+  }
+
   type Query {
     posts: [Post]
     getPostById(id: ID!): Post
+    postMetrics: PostMetricsType
     
     users: [User]
     getUserById(id: ID!): User
@@ -66,6 +71,11 @@ const queryTypeDef = `
     updateTodo(id: ID!, payload: UpdateTodoInput!): Todo
     deleteTodoById(id: ID!): Todo
   }
+
+  type Subscription {
+    postCreated: Post
+    postMetrics: PostMetricsType
+  }
 `;
 
 export const typeDefs = [queryTypeDef, postTypeDef, userTypeDef, todoTypeDef];
@@ -80,5 +90,8 @@ export const resolvers = {
     ...postsResolvers.mutation,
     ...userResolvers.mutation,
     ...todosResolvers.mutation,
+  },
+  Subscription: {
+    ...postsResolvers.subscription,
   },
 };

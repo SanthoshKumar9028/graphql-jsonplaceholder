@@ -54,12 +54,18 @@ Query Resolvers:
 
 - `posts`: Retrieves all posts.
 - `getPostById`: Retrieves a single post by its ID.
+- `postMetrics`: Retrieves metrics about the posts.
 
 Mutation Resolvers:
 
 - `createPost`: Creates a new post and associates it with a user.
 - `updatePost`: Updates an existing post by its ID.
 - `deletePostById`: Deletes a post by its ID.
+
+Subscription Resolvers:
+
+- `postCreated`: Subscribes to newly created posts.
+- `postMetrics`: Subscribes to post metrics updates.
 
 Each resolver interacts with the Post and User models to perform the necessary database operations.
 
